@@ -38,7 +38,6 @@ class DistributedPipeServer
                         is_stream_ended = @red.left_data
                         data = @red.pop_from_queue
                         if !data.empty?
-                            puts data.inspect
                             pipe.puts("#{data.join('')}")
                         else
                             sleep 0.2

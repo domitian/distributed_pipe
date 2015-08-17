@@ -26,14 +26,17 @@ class RedisConnector
         @redis.del @redis_key
     end
 
-    def push_key_to_right val
-        @redis.rpush @redis_key,val
-        puts "stored in redis queue"
-    end
-
     def left_data
         return @redis.lindex @redis_key,0
     end
+
+    def push_key_to_right val
+        @redis.rpush @redis_key,val
+        if left_data == "end"
+            abort "quitting because server program quit"
+        end
+    end
+
 
     def change_left_data msg
         @redis.pipelined do

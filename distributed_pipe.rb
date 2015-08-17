@@ -42,14 +42,12 @@ class DistributedPipeClient
                     buffer << line
                     count = count + 1
                     if count > 10
-                        puts buffer
                         @red.push_key_to_right buffer.join("")
                         buffer = []
                         count = 0
                     end
                 end
                 unless buffer.empty?
-                    puts buffer
                     @red.push_key_to_right  buffer.join("")
                 end
             end
