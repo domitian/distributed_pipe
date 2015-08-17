@@ -2,19 +2,13 @@ require "redis"
 
 
 
-# REDIS CONFIGURATION
-REDIS_HOST = "127.0.0.1"
-REDIS_PORT = "6379"
 
-REDIS_KEY = "CT"
 
 
 class RedisConnector
     attr_accessor :redis
-    attr_accessor :redis_key
-    def initialize(host,port,key)
-        @redis = Redis.new(:host => host, :port => port, :db => 15)
-        @redis_key = key
+    def initialize(host,port)
+        @redis = Redis.new(:host => REDIS_HOST, :port => REDIS_PORT, :db => 15)
     end
 
     def check_if_redis_is_live
@@ -27,12 +21,14 @@ class RedisConnector
         end
     end
 
-    def store_in_redis_queue key,val
-        @redis.hset @redis_key,key,val
-        puts "stored in redis hash"
+    def push_key_to_left key,val
+        @redis.lpush key,val
+    end
+
+    def push_key_to_right key,val
+        @redis.rpush key,val
+        puts "stored in redis queue"
     end
 
 end
 
-red = RedisConnector.new(REDIS_HOST,REDIS_PORT,REDIS_KEY)
-red.check_if_redis_is_live
