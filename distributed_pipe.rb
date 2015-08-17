@@ -3,24 +3,31 @@ require_relative 'redis_connector'
 REDIS_HOST = "127.0.0.1"
 REDIS_PORT = "6379"
 
-class DistributedPipe
+class DistributedPipeClient
 
-    attr_reader :redis_key
-    attr_reader :command_type
     attr_reader :command
     attr_reader :redis
     def initialize
-        @red = RedisConnector.new(REDIS_HOST,REDIS_PORT)
-        @red.check_if_redis_is_live
-        if ARGV.count >= 3
-            @redis_key = ARGV.shift
-            @command_type = ARGV.shift
+        if ARGV.count >= 2
+            redis_key = ARGV.shift
             @command = ARGV.join(" ")
+            @red = RedisConnector.new(REDIS_HOST,REDIS_PORT,redis_key)
+            @red.check_if_redis_is_live
         else
             abort "Wrong number of commandline arguments"
         end
-        @red.push_key_to_left @redis_key,"output_start"
+        while(@red.left_data != "start") do
+
+            sleep 0.5
+            puts "waiting for the server command"
+            if @red.left_data == "end"
+                abort "server command doesn't exist"
+            end
+        end
+        @red.change_left_data("stream")
     end
+
+
 
     def run_command
         fork_pid = fork do
@@ -36,16 +43,17 @@ class DistributedPipe
                     count = count + 1
                     if count > 10
                         puts buffer
-                        @red.push_key_to_right @redis_key,buffer.join("\n")
+                        @red.push_key_to_right buffer.join("")
                         buffer = []
                         count = 0
                     end
                 end
                 unless buffer.empty?
                     puts buffer
-                    @red.push_key_to_right  @redis_key,buffer.join("\n")
+                    @red.push_key_to_right  buffer.join("")
                 end
             end
+            @red.change_left_data("ended")
         end
         trap("SIGINT") do
             puts "sending signal to child"
@@ -57,7 +65,7 @@ class DistributedPipe
 end
 
 
-DistributedPipe.new.run_command
+DistributedPipeClient.new.run_command
 
 
 
