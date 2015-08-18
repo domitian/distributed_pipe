@@ -35,21 +35,26 @@ class DistributedPipeClient
                 puts "Signal received, shutting down"
                 exit
             end
-            IO.popen(@command) do |f|
-                buffer = []
-                count = 0
-                f.each do |line|
-                    buffer << line
-                    count = count + 1
-                    if count > 10
-                        @red.push_key_to_right buffer.join("")
-                        buffer = []
-                        count = 0
+            begin
+                #running command and opening the output buffer and reading it
+                IO.popen(@command) do |f|
+                    buffer = []
+                    count = 0
+                    f.each do |line|
+                        buffer << line
+                        count = count + 1
+                        if count > 20
+                            @red.push_key_to_right buffer.join("")
+                            buffer = []
+                            count = 0
+                        end
+                    end
+                    unless buffer.empty?
+                        @red.push_key_to_right  buffer.join("")
                     end
                 end
-                unless buffer.empty?
-                    @red.push_key_to_right  buffer.join("")
-                end
+            rescue Errno::ENOENT
+                @red.change_left_data("ended")
             end
             @red.change_left_data("ended")
         end

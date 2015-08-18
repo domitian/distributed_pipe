@@ -50,7 +50,9 @@ class DistributedPipeServer
                 @red.change_left_data("end")
             rescue Errno::EPIPE
                 @red.change_left_data("end")
-                abort("end")
+            rescue Exception => exc
+                @red.change_left_data("end")
+                puts(exc.message)
             end
             
         end
