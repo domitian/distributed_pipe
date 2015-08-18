@@ -20,13 +20,17 @@ Now the app is ready is go
 ## Server side Running
 
 ruby distributed_pipe_server.rb REDIS_KEY COMMAND_TO_RUN
+
 ex:- 
+
 `ruby distributed_pipe_server.rb cc ls`
 
 ## Client Side Running
 
 ruby distributed_pipe.rb REDIS_KEY COMMAND_TO_RUN
+
 ex:-
+
 `ruby distributed_pipe_server.rb cc wc -l`
 
 ### Testing:-
@@ -34,6 +38,9 @@ ex:-
 If the redis url is 127.0.0.1, then just open two tabs and go to the app directory in both the tabs and then run the following commands
 
 TERMINAL 1(SERVER)
+
 `ruby distributed_pipe_server.rb cc ls`
+
 TERMINAL 2(CLIENT)
+
 `ruby distributed_pipe.rb cc yes`
