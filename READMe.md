@@ -39,7 +39,7 @@ bundle install
 Now the app is ready is go
 
 ### Usage:
-#### Server side Running
+##### Server side Running
 
 ruby distributed_pipe_server.rb REDIS_KEY COMMAND_TO_RUN
 
@@ -47,7 +47,7 @@ ex:-
 
 `ruby distributed_pipe_server.rb cc ls`
 
-#### Client Side Running
+##### Client Side Running
 
 ruby distributed_pipe.rb REDIS_KEY COMMAND_TO_RUN
 
